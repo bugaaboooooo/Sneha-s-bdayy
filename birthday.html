@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Happy Birthday!</title>
+<style>
+  body {
+    margin: 0;
+    padding: 0;
+    font-family: 'Arial', sans-serif;
+    background: linear-gradient(135deg, #ff9ff3, #feca57);
+    overflow: hidden;
+    height: 100vh;
+    position: relative;
+  }
+  .cake-container {
+    font-size: 100px;
+    position: absolute;
+    cursor: pointer;
+    transition: transform 0.3s;
+    animation: bounce 0.5s infinite alternate;
+    z-index: 2;
+  }
+  #clickText {
+    font-size: 24px;
+    color: white;
+    font-weight: bold;
+    text-align: center;
+    margin-top: 10px;
+    position: relative;
+  }
+  #birthdayMsg {
+    display: none;
+    margin-top: 20px;
+    text-align: center;
+    color: #fff;
+    font-size: 22px;
+    line-height: 1.5;
+    max-width: 500px;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 2;
+  }
+  .line {
+    opacity: 0;
+    display: block;
+    margin-bottom: 10px;
+  }
+  .heart {
+    position: absolute;
+    font-size: 20px;
+    animation: burst 1.5s forwards;
+  }
+  .floating-cake {
+    position: absolute;
+    font-size: 120px; /* bigger cake */
+    top: 10px;
+    left: 50%;
+    transform: translateX(-50%);
+    animation: floatCake 3s ease-in-out infinite alternate;
+    z-index: 1;
+    display: none; /* hidden initially */
+  }
+  .glitter {
+    position: absolute;
+    width: 5px;
+    height: 5px;
+    background: white;
+    border-radius: 50%;
+    opacity: 0.8;
+    animation: glitterAnim 2s linear infinite;
+    z-index: 0;
+  }
+  @keyframes bounce {
+    0% { transform: translateY(0); }
+    100% { transform: translateY(-20px); }
+  }
+  @keyframes burst {
+    0% { transform: translate(0,0) scale(0.5); opacity: 1; }
+    100% { transform: translate(var(--x), var(--y)) scale(1.2); opacity: 0; }
+  }
+  @keyframes floatCake {
+    0% { transform: translateX(-50%) translateY(0); }
+    100% { transform: translateX(-50%) translateY(20px); }
+  }
+  @keyframes glitterAnim {
+    0% { transform: translateY(0); opacity: 0.8; }
+    50% { opacity: 0.2; }
+    100% { transform: translateY(10px); opacity: 0.8; }
+  }
+</style>
+</head>
+<body>
+
+<!-- Floating cake at top (hidden initially) -->
+<div class="floating-cake" id="floatingCake">🎂</div>
+
+<div class="cake-container" id="cake" onclick="handleCakeClick()">
+  🎂
+  <div id="clickText">Click me</div>
+</div>
+
+<div id="birthdayMsg">
+  <span class="line">Happpyyyyyyy Birthdayyyyy Sneha 🎉🎈🎈🎂🎉</span>
+  <span class="line">Many many happy returns of the day ❤️</span>
+  <span class="line">May God bless you🎈</span>
+  <span class="line">Enjoy your dayyy 🎂</span>
+  </div>
+
+<audio id="music" src="https://orangefreesounds.com/wp-content/uploads/2016/08/Happy-birthday-instrumental.mp3"></audio>
+
+<script>
+let clickCount = 0;
+
+// Create glitter effect
+for(let i=0;i<100;i++){
+  const glitter = document.createElement('div');
+  glitter.classList.add('glitter');
+  glitter.style.left = Math.random() * window.innerWidth + 'px';
+  glitter.style.top = Math.random() * window.innerHeight + 'px';
+  glitter.style.animationDuration = (1 + Math.random()*2) + 's';
+  document.body.appendChild(glitter);
+}
+
+// Function to create hearts burst
+function createHearts(x, y, count=20) {
+  const colors = ['#ff4d4d','#ff66b2','#ffdb4d','#66ff66','#66d9ff','#ff66a3'];
+  for(let i=0;i<count;i++){
+    const heart = document.createElement('div');
+    heart.classList.add('heart');
+    heart.style.left = x + 'px';
+    heart.style.top = y + 'px';
+    heart.style.color = colors[Math.floor(Math.random()*colors.length)];
+    const angle = Math.random()*2*Math.PI;
+    const distance = 50 + Math.random()*100;
+    heart.style.setProperty('--x', (Math.cos(angle)*distance) + 'px');
+    heart.style.setProperty('--y', (Math.sin(angle)*distance) + 'px');
+    heart.innerHTML = '❤️';
+    document.body.appendChild(heart);
+    setTimeout(()=>heart.remove(),1500);
+  }
+}
+
+function handleCakeClick() {
+  clickCount++;
+  const cake = document.getElementById('cake');
+  const floatingCake = document.getElementById('floatingCake');
+
+  // Get cake position
+  const rect = cake.getBoundingClientRect();
+  const cakeX = rect.left + rect.width/2;
+  const cakeY = rect.top + rect.height/2;
+
+  // Hearts on every click
+  createHearts(cakeX, cakeY, 20);
+
+  if (clickCount < 5) {
+    // Move cake to random position
+    const x = Math.random() * (window.innerWidth - 120);
+    const y = Math.random() * (window.innerHeight - 120);
+    cake.style.left = x + 'px';
+    cake.style.top = y + 'px';
+    
+    // Slight random rotation for fun
+    cake.style.transform = `rotate(${Math.random()*30-15}deg)`;
+    
+  } else {
+    // 5th click: show birthday message, hearts, and floating cake
+    cake.style.display = 'none';
+    floatingCake.style.display = 'block';
+    document.getElementById('birthdayMsg').style.display = 'block';
+
+    // Extra hearts for final effect
+    createHearts(window.innerWidth/2, window.innerHeight/2, 50);
+
+    // Show message line by line
+    const lines = document.querySelectorAll('.line');
+    lines.forEach((line,index)=>{
+      setTimeout(()=>{ line.style.opacity = 1; }, index*700);
+    });
+
+    // Play music
+    document.getElementById('music').play();
+  }
+}
+
+// Initial random position for the cake
+window.onload = () => {
+  const cake = document.getElementById('cake');
+  cake.style.left = Math.random()*(window.innerWidth-120) + 'px';
+  cake.style.top = Math.random()*(window.innerHeight-120) + 'px';
+}
+</script>
+
+</body>
+</html>
